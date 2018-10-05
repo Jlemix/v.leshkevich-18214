@@ -2,7 +2,7 @@
 
 myGet :: [a]->Integer->a
 myGet (x:xs) n | n == 0 = x
-			   | otherwise = myGet xs (n-1)
+	       | otherwise = myGet xs (n-1)
 
 --2. head xs — вернет первый элемент списка xs;
 
