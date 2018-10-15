@@ -1,10 +1,10 @@
 --1. get xs n — получим n-й произвольный элемент списка xs, начиная с нулевого;
 
 myGet :: [a]->Integer->a
-myGet (x:xs) n | n == 0 = x
+myGet [] n = error "Empty list"
+myGet (x:xs) n  | n == 0 = x
 	        | otherwise = myGet xs (n-1)
---error
-
+		
 --2. head xs — вернет первый элемент списка xs;
 
 myHead :: [a]->a
@@ -35,10 +35,10 @@ myInit (x:xs) = x : myInit xs -- myInit [1,2,3] => 1 : myInit [2,3] => 1 : 2 : m
 --6. reverse xs — вернет обратный список;
 
 myReverse :: [a]->[a]
-myReverse [] = error "Empty list"
-myReverse [x] = [x]
-myReverse (x:xs) = myConcat (myReverse xs) [x] -- myReverse [3,4,5] => myReverse [4,5] ++ [3] => myReverse [5] ++ [4] ++ [3] => [5] ++ [4] ++ [3]
---ne optimal'no
+myReverse = helpf []
+    where
+        helpf list [] = list
+        helpf list (x:xs) = helpf (x:list) xs
 
 --7. length xs — вернет длину списка xs;
 
