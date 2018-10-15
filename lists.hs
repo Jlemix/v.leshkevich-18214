@@ -3,6 +3,7 @@
 myGet :: [a]->Integer->a
 myGet (x:xs) n | n == 0 = x
 	        | otherwise = myGet xs (n-1)
+--error
 
 --2. head xs — вернет первый элемент списка xs;
 
@@ -37,6 +38,7 @@ myReverse :: [a]->[a]
 myReverse [] = error "Empty list"
 myReverse [x] = [x]
 myReverse (x:xs) = myConcat (myReverse xs) [x] -- myReverse [3,4,5] => myReverse [4,5] ++ [3] => myReverse [5] ++ [4] ++ [3] => [5] ++ [4] ++ [3]
+--ne optimal'no
 
 --7. length xs — вернет длину списка xs;
 
