@@ -11,9 +11,9 @@ toDecimal base snumber | base == '1' = turing (snumber) 0
 				    turing (hed:snumber) length = turing snumber (length + 1)
 				    toDecimalFunc base [] num decim = show num
 				    toDecimalFunc base (hed:snumber) num decim | hed >= '0' &&  hed <= '9' && fromEnum hed - 48 < base = toDecimalFunc base snumber (num + (decim *(fromEnum hed - 48))) (decim * base)
-																			   | hed >= 'A' &&  hed <= 'Z' && fromEnum hed - 29 < base = toDecimalFunc base snumber (num + (decim *(fromEnum hed - 29))) (decim * base)
-																			   | hed >= 'a' &&  hed <= 'z' && fromEnum hed - 87 < base = toDecimalFunc base snumber (num + (decim *(fromEnum hed - 87))) (decim * base)
-																			   | otherwise = error "Wrong Number"
+								               | hed >= 'A' &&  hed <= 'Z' && fromEnum hed - 29 < base = toDecimalFunc base snumber (num + (decim *(fromEnum hed - 29))) (decim * base)
+									       | hed >= 'a' &&  hed <= 'z' && fromEnum hed - 87 < base = toDecimalFunc base snumber (num + (decim *(fromEnum hed - 87))) (decim * base)
+									       | otherwise = error "Wrong Number"
 --Example:
 --toDecimal '2' "111" => toDecimalFunc '2' "111" 0 1 => toDecimalFunc '2' "11" (0 + (1 * (1))) (1 * 2) => toDecimalFunc '2' "1" (1 + (2 * (1))) (2 * 2) => toDecimalFunc '2' "" (3 + (4 * (1))) (4 * 2) => 7																	   
 
