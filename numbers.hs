@@ -20,13 +20,13 @@ toDecimal base snumber | base == '1' = turing (snumber) 0
 --2. fromDecimal toBase snumber — переводит строковое представление числа snumber из системы по основанию 10 в строковое представление числа в системе по основанию toBase.	
 																		   
 fromDecimal :: Char->String->String
-fromDecimal toBase snumber | toBase == '1' = turing ['1'] (read snumber::Int) 
+fromDecimal toBase snumber | toBase == '1' = turing [] (read snumber::Int) 
 			   | toBase > '1' && toBase <= '9' = fromDecimalFunc (fromEnum toBase - 48) (read snumber::Int) []
 			   | toBase >= 'A' && toBase <= 'Z' = fromDecimalFunc (fromEnum toBase - 29) (read snumber::Int) []
 			   | toBase >= 'a' && toBase <= 'z' = fromDecimalFunc (fromEnum toBase - 87) (read snumber::Int) []
 			   | otherwise = error "Wrong Base"
 				    where
-					turing num 0 = num
+					turing num 0 = (num ++ "1")
 					turing num length = turing (num ++ "1") (length - 1)
 					fromDecimalFunc :: Int -> Int -> String -> String
 					fromDecimalFunc base 0 num = num
