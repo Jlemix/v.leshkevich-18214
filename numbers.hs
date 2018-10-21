@@ -26,8 +26,8 @@ fromDecimal toBase snumber | toBase == '1' = turing [] (read snumber::Int)
 			   | toBase >= 'a' && toBase <= 'z' = fromDecimalFunc (fromEnum toBase - 87) (read snumber::Int) []
 			   | otherwise = error "Wrong Base"
 				    where
-					turing num 0 = (num ++ "1")
-					turing num length = turing (num ++ "1") (length - 1)
+					turing num 0 = '1':num
+					turing num length = turing ('1':num) (length - 1)
 					fromDecimalFunc :: Int -> Int -> String -> String
 					fromDecimalFunc base 0 num = num
 					fromDecimalFunc base snumber num = fromDecimalFunc base (div snumber base) ((toEnum(asci (mod snumber base) )::Char):num)
