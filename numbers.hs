@@ -5,6 +5,7 @@ toDecimal base snumber | base == '1' = turing (snumber) 0
 		       | base > '1' && base <= '9' = toDecimalFunc (fromEnum base - 48) (reverse snumber) 0 1 -- ord?
 		       | base >= 'A' && base <= 'Z' = toDecimalFunc (fromEnum base - 29) (reverse snumber) 0 1
 		       | base >= 'a' && base <= 'z' = toDecimalFunc (fromEnum base - 87) (reverse snumber) 0 1
+		       | snumber == [] = error "There is no number"
 		       | otherwise = error "Wrong Base"
 				where
 				    turing [] length = show length
@@ -24,6 +25,7 @@ fromDecimal toBase snumber | toBase == '1' = turing [] (read snumber::Int)
 			   | toBase > '1' && toBase <= '9' = fromDecimalFunc (fromEnum toBase - 48) (read snumber::Int) []
 			   | toBase >= 'A' && toBase <= 'Z' = fromDecimalFunc (fromEnum toBase - 29) (read snumber::Int) []
 			   | toBase >= 'a' && toBase <= 'z' = fromDecimalFunc (fromEnum toBase - 87) (read snumber::Int) []
+			   | snumber == [] = error "There is no number"
 			   | otherwise = error "Wrong Base"
 				    where
 					turing num 0 = '1':num
