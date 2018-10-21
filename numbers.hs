@@ -6,7 +6,7 @@ toDecimal base snumber | base == '1' = turing (snumber) 0
 		       | base >= 'A' && base <= 'Z' = toDecimalFunc (fromEnum base - 29) (reverse snumber) 0 1
 		       | base >= 'a' && base <= 'z' = toDecimalFunc (fromEnum base - 87) (reverse snumber) 0 1
 		       | snumber == [] = error "There is no number"
-		       | fromEnum(head snumber) < 48 || fromEnum(head snumber) > 122 = error "Wrong number"
+		       | fromEnum(head snumber) < 48 || fromEnum(head snumber) > 122 || fromEnum(head snumber) > 57 && fromEnum(head snumber) < 65 || fromEnum(head snumber) > 90 && fromEnum(head snumber) < 97 = error "Wrong number"
 		       | otherwise = error "Wrong Base"
 				where
 				    turing [] length = show length
@@ -27,7 +27,7 @@ fromDecimal toBase snumber | toBase == '1' = turing [] (read snumber::Int)
 			   | toBase >= 'A' && toBase <= 'Z' = fromDecimalFunc (fromEnum toBase - 29) (read snumber::Int) []
 			   | toBase >= 'a' && toBase <= 'z' = fromDecimalFunc (fromEnum toBase - 87) (read snumber::Int) []
 			   | snumber == [] = error "There is no number"
-			   | fromEnum(head snumber) < 48 || fromEnum(head snumber) > 122 = error "Wrong number"
+			   | fromEnum(head snumber) < 48 || fromEnum(head snumber) > 122 || fromEnum(head snumber) > 57 && fromEnum(head snumber) < 65 || fromEnum(head snumber) > 90 && fromEnum(head snumber) < 97 = error "Wrong number"
 			   | otherwise = error "Wrong Base"
 				    where
 					turing num 0 = '1':num
