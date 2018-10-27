@@ -1,3 +1,8 @@
+
+-----------------------------------------------------------------
+------------------------FIRST SOLUTION---------------------------
+-----------------------------------------------------------------
+
 --1. toDecimal base snumber – переводит строковое представление числа snumber из системы по основанию base в строковое представление десятичного числа.
 
 toDecimal :: Char->String->String
@@ -46,4 +51,53 @@ fromDecimal toBase snumber | toBase == '1' = turing [] (read snumber::Int)
 --3. convertFromTo fromBase toBase snumber — переводит строковое представление числа snumber из системы по основанию fromBase в строковое представление числа в системе по основанию toBase.
 													   
 convertFromTo::Char->Char->String->String
-convertFromTo fromBase toBase snumber = fromDecimal toBase (toDecimal (fromBase) (snumber))													   
+convertFromTo fromBase toBase snumber = fromDecimal toBase (toDecimal (fromBase) (snumber))
+
+
+-----------------------------------------------------------------
+-----------------------ANOTHER SOLUTION--------------------------
+-----------------------------------------------------------------
+
+import Data.Char
+
+--1. toDecimal
+
+toDecimal':: Int->String->String
+toDecimal' base snumber | base == 1 = turing' snumber 0
+			| base > 1 && base <= 61 = toDecimal'Func base snumber
+			| otherwise = error "Wrong Base"
+						where
+							turing' [] length = show length
+							turing' (hed:snumber) length = turing' snumber (length + 1)
+							toDecimal'Func::Int->String->String
+							toDecimal'Func base snumber | any (\hed -> (myreord hed) >= base) snumber = error "Found digit that higher than base"
+										    | otherwise = show(div(foldl(\f hed->base*(f+(myreord hed))) 0 snumber) base)
+															where 
+																myreord::Char->Int
+																myreord symb | ord symb <= ord '9' = (ord symb - 48)
+																	     | ord symb <= ord 'Z' = (ord symb - 29)
+																	     | ord symb <= ord 'z' = (ord symb - 87)
+																	     | otherwise = error "smth went wrong"
+
+--2. fromDecimal
+
+fromDecimal'::Int->String->String
+fromDecimal' base snumber | base == 1 = turing' [] (read snumber::Int)
+			  | base > 1 && base <= 61 = fromDecimal'Func base (read snumber::Int) []
+			  | otherwise = error "Wrong Base"
+					where
+							turing':: String->Int->String
+							turing' num 0 = '1':num
+							turing' num length = turing' ('1':num) (length - 1)
+							fromDecimal'Func :: Int -> Int -> String -> String
+							fromDecimal'Func base 0 num = num
+							fromDecimal'Func base snumber num = fromDecimal'Func base (div snumber base) ((toEnum(asci (mod snumber base) )::Char):num)
+										where
+											asci numba | numba < 10 = numba + 48
+												   | numba > 9 && numba < 36 = numba + 87
+												   | numba > 35 && numba < 62 = numba + 29
+												   | otherwise = error "Not in range"
+--3. convertFromTo
+
+convertFromTo'::Int->Int->String->String
+convertFromTo' fromBase toBase snumber = fromDecimal' toBase (toDecimal' (fromBase) (snumber)) 
