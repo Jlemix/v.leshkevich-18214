@@ -70,11 +70,11 @@ toDecimal' base snumber | base == 1 = turing' snumber 0
 							turing' [] length = show length
 							turing' (hed:snumber) length = turing' snumber (length + 1)
 							myreord::Char->Int
-								myreord symb | ord symb <= ord '9' = (ord symb - 48)
-											 | ord symb <= ord 'Z' = (ord symb - 29)
-											 | ord symb <= ord 'z' = (ord symb - 87)
-											 | otherwise = error "smth went wrong"
-								toDecimal'Func base snumber = show (foldl (\f hed -> if (myreord hed < base) then f*base + myreord hed else error "Found wrong digit") 0 snumber)
+							myreord symb | ord symb <= ord '9' = (ord symb - 48)
+								     | ord symb <= ord 'Z' = (ord symb - 29)
+								     | ord symb <= ord 'z' = (ord symb - 87)
+								     | otherwise = error "smth went wrong"
+							toDecimal'Func base snumber = show (foldl (\f hed -> if (myreord hed < base) then f*base + myreord hed else error "Found wrong digit") 0 snumber)
 
 --2. fromDecimal
 
