@@ -58,7 +58,6 @@ convertFromTo fromBase toBase snumber = fromDecimal toBase (toDecimal (fromBase)
 -----------------------ANOTHER SOLUTION--------------------------
 -----------------------------------------------------------------
 
-import Data.Char
 
 --1. toDecimal
 
