@@ -61,41 +61,40 @@ convertFromTo fromBase toBase snumber = fromDecimal toBase (toDecimal (fromBase)
 import Data.Char
 
 --1. toDecimal
-
+--toDecimal' 1 snum = che-tio tam
 toDecimal':: Int->String->String
 toDecimal' base snumber | base == 1 = turing' snumber 0
-			| base > 1 && base <= 61 = toDecimal'Func base snumber
-			| snumber == [] = error "There is no number"
-			| otherwise = error "Wrong Base"
+						| base > 1 && base <= 61 = toDecimal'Func base snumber
+						| otherwise = error "Wrong Base"
 						where
 							turing' [] length = show length
 							turing' (hed:snumber) length = turing' snumber (length + 1)
 							myreord::Char->Int
 							myreord symb | ord symb <= ord '9' = (ord symb - 48)
-								     | ord symb <= ord 'Z' = (ord symb - 29)
-								     | ord symb <= ord 'z' = (ord symb - 87)
-								     | otherwise = error "smth went wrong"
-							toDecimal'Func base snumber = show(div(foldl(\f hed->base*(f+(myreord hed))) 0 snumber) base)
+										 | ord symb <= ord 'Z' = (ord symb - 29)
+										 | ord symb <= ord 'z' = (ord symb - 87)
+										 | otherwise = error "smth went wrong"
+							toDecimal'Func base snumber = show (foldl (\acc hed -> if (myreord hed < base) then acc*base + myreord hed else error "Found wrong digit") 0 snumber)
 
 --2. fromDecimal
 
 fromDecimal'::Int->String->String
 fromDecimal' base snumber | base == 1 = turing' [] (read snumber::Int)
-			  | base > 1 && base <= 61 = fromDecimal'Func base (read snumber::Int) []
-			  | snumber == [] = error "There is no number"
-			  | otherwise = error "Wrong Base"
+						  | base > 1 && base <= 61 = fromDecimal'Func base (read snumber::Int) []
+						  | otherwise = error "Wrong Base"
 					where
 							turing':: String->Int->String
 							turing' num 0 = '1':num
 							turing' num length = turing' ('1':num) (length - 1)
+							--replicate 2 '1' = "11"
 							fromDecimal'Func :: Int -> Int -> String -> String
 							fromDecimal'Func base 0 num = num
 							fromDecimal'Func base snumber num = fromDecimal'Func base (div snumber base) ((toEnum(asci (mod snumber base) )::Char):num)
 										where
 											asci numba | numba < 10 = numba + 48
-												   | numba > 9 && numba < 36 = numba + 87
-												   | numba > 35 && numba < 62 = numba + 29
-												   | otherwise = error "Not in range"
+												       | numba > 9 && numba < 36 = numba + 87
+												       | numba > 35 && numba < 62 = numba + 29
+												       | otherwise = error "Not in range"
 --3. convertFromTo
 
 convertFromTo'::Int->Int->String->String
