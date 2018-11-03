@@ -65,7 +65,6 @@ import Data.Char
 toDecimal':: Int->String->String
 toDecimal' base snumber | base == 1 = turing' snumber 0
 			| base > 1 && base <= 61 = toDecimal'Func base snumber
-			| ord(head snumber) < 48 || ord(head snumber) > 122 || ord(head snumber) > 57 && ord(head snumber) < 65 || ord(head snumber) > 90 && ord(head snumber) < 97 = error "Wrong number"
 			| snumber == [] = error "There is no number"
 			| otherwise = error "Wrong Base"
 						where
@@ -83,7 +82,6 @@ toDecimal' base snumber | base == 1 = turing' snumber 0
 fromDecimal'::Int->String->String
 fromDecimal' base snumber | base == 1 = turing' [] (read snumber::Int)
 			  | base > 1 && base <= 61 = fromDecimal'Func base (read snumber::Int) []
-			  | ord(head snumber) < 48 || ord(head snumber) > 122 || ord(head snumber) > 57 && ord(head snumber) < 65 || ord(head snumber) > 90 && ord(head snumber) < 97 = error "Wrong number"
 			  | snumber == [] = error "There is no number"
 			  | otherwise = error "Wrong Base"
 					where
