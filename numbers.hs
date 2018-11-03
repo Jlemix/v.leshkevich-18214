@@ -74,7 +74,7 @@ toDecimal' base snumber | base == 1 = turing' snumber 0
 								     | ord symb <= ord 'Z' = (ord symb - 29)
 								     | ord symb <= ord 'z' = (ord symb - 87)
 								     | otherwise = error "smth went wrong"
-							toDecimal'Func base snumber = show (foldl (\f hed -> if (myreord hed < base) then f*base + myreord hed else error "Found wrong digit") 0 snumber)
+							toDecimal'Func base snumber = show(div(foldl(\f hed->base*(f+(myreord hed))) 0 snumber) base)
 
 --2. fromDecimal
 
