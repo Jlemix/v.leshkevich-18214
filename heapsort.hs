@@ -1,6 +1,3 @@
-iLeftChild i = 2*i
-iRightChild i = 2*i + 1
-
 swap :: Int -> Int -> [a] -> [a]
 swap m n list = take (i1 - 1) list ++ [list !! (i2 - 1)] ++ (drop i1 (take (i2 - 1) list)) ++ [list !! (i1 - 1)] ++ drop i2 list
     where i1 = min m n
@@ -17,6 +14,9 @@ heapSort xs = heapSort (take (length xs - 1) (swapped xs)) ++ [head (buildMaxHea
 				heapify :: Int -> [Int] -> [Int]
 				heapify i arr = if largest i /= i then heapify (largest i) (swap (largest i) i arr) else arr
 					where
+						iLeftChild i = 2*i
+						iRightChild i = 2*i + 1
 						big_iLeftChild i j = if iLeftChild i <= length arr && (arr !! ((iLeftChild i) - 1)) > (arr !! (j-1)) then iLeftChild i else j
 						big_iRightChild i j = if iRightChild i <= length arr && (arr !! ((iRightChild i) - 1)) > (arr !! (j-1)) then iRightChild i else j
 						largest i = big_iRightChild i (big_iLeftChild i i)
+						
