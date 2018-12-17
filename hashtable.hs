@@ -37,13 +37,12 @@ hash = foldl' f golden
    where f m c = fromIntegral (ord c) * magic + hashInt m
          magic = 0xdeadbeef
 
-erase :: (Show key, Eq key) => HashTable key val -> key -> HashTable key val
-erase (HashTable xs len) key = HashTable (destroy xs key) (len - 1)
-				where
-					destroy [] _ = []
-					destory ((Element (key, val) next):xs) find | hash (key) == hash (find) = xs
-										    | otherwise = (Element (key, val) next):(destroy xs find)
-
+erase::(Show key, Ord key)=>HashTable key val->key->HashTable key val
+erase (HashTable xs len) key = HashTable (destroy xs key) (len-1)
+	where
+		destroy [] _ = []
+		destroy ((Element (key,val) next):xs) find | hash (show $ key) == hash (show $ find) = xs 
+							   | otherwise = (Element (key, val) next):(destroy xs find)
 insert' :: (Show key, Ord key) => HashTable key val -> key -> val -> HashTable key val
 insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
 					where
