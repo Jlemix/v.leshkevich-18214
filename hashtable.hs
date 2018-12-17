@@ -42,7 +42,7 @@ erase (HashTable xs len) key = HashTable (destroy xs key) (len - 1)
 				where
 					destroy [] _ = []
 					destory ((Element (key, val) next):xs) find | hash (key) == hash (find) = xs
-																			                      	| otherwise = (Element (key, val) next):(destroy xs find)
+										    | otherwise = (Element (key, val) next):(destroy xs find)
 
 insert' :: (Show key, Ord key) => HashTable key val -> key -> val -> HashTable key val
 insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
@@ -50,23 +50,23 @@ insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
 						elem::(Show key, Ord key) => [HT_Element key val] -> key -> val -> [HT_Element key val]
 						elem [] find value = [Element (find, value) []]
 						elem ((Element (key,val) next):xs) find value | hash (show key) == hash (show find) && key == find = (Element (key,val) ((Element (find,value) [Equal]):next)):xs
-																					                        | hash (show key) == hash (show find) && key < find = (Element (key,val) next):(elem xs find value)
-																					                        | otherwise = (Element (find,value) []):(Element (key,value) next):xs
+											      | hash (show key) == hash (show find) && key < find = (Element (key,val) next):(elem xs find value)
+											      | otherwise = (Element (find,value) []):(Element (key,value) next):xs
 contains :: (Show key, Ord key) => HashTable key val -> key -> Bool
 contains (HashTable xs len) key = lookup xs key
 					where
 						lookup [] _ = False
 						lookup ((Element (key,val) next):xs) find | hash (show key) == hash (show find) && key == find = True
-																				                      | otherwise = lookup xs find
+									                  | otherwise = lookup xs find
 at :: (Show key, Ord key) => HashTable key val -> key -> val
 at (HashTable xs len) key = retrn xs key
 				where
 					retrn [] _ = error "Can not find value by this key"
 					retrn ((Element (key,val) next):xs) find | hash (show key) == hash (show find) = val
-																		                     | otherwise = retrn xs find
+									         | otherwise = retrn xs find
 size :: (Show key, Ord key) => HashTable key val -> Integer
 size (HashTable xs len) = len
 
 empty :: (Show key, Ord key) => HashTable key val -> Bool
 empty (HashTable xs len) | len == 0 = True
-			 | otherwise = False
+			  | otherwise = False
