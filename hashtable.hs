@@ -41,7 +41,7 @@ erase::(Show key, Ord key)=>HashTable key val->key->HashTable key val
 erase (HashTable xs len) key = HashTable (destroy xs key) (len-1)
 	where
 		destroy [] _ = []
-		destroy ((Element (key,val) next):xs) find | hash (show $ key) == hash (show $ find) = xs 
+		destroy ((Element (key,val) next):xs) find | hash (show key) == hash (show find) = xs 
 							   | otherwise = (Element (key, val) next):(destroy xs find)
 insert' :: (Show key, Ord key) => HashTable key val -> key -> val -> HashTable key val
 insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
