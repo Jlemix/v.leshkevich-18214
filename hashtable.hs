@@ -1,8 +1,12 @@
+module HashTable where
+
 import Data.Char
 import Data.List
 import Data.Int
 import Data.Bits
 import GHC.Int 
+
+--ord na eq, izmenit insert'
 
 data HT_Element key val = Equal | Element (key,val) [HT_Element key val] deriving (Show, Eq, Ord)
 
@@ -20,22 +24,20 @@ fromList xs = HashTable (construct xs) (toInteger(length xs))
 clear :: HashTable key val -> HashTable key val
 clear table = defaultHashTable
 
-golden :: Int32
-golden = 1013904242
-
-hashInt :: Int32 -> Int32
-hashInt x = mulHi x golden + x
-
-mulHi :: Int32 -> Int32 -> Int32
-mulHi a b = fromIntegral (r `shiftR` 32)
-		where 
-			r :: Int32
-			r = fromIntegral a * fromIntegral b
-
 hash :: String -> Int32
 hash = foldl' f golden
    where f m c = fromIntegral (ord c) * magic + hashInt m
          magic = 0xdeadbeef
+         golden :: Int32
+         golden = 1013904242
+         hashInt :: Int32 -> Int32
+         hashInt x = mulHi x golden + x
+              where
+                mulHi :: Int32 -> Int32 -> Int32
+                mulHi a b = fromIntegral (r `shiftR` 32)
+	              	where 
+			              r :: Int32
+			              r = fromIntegral a * fromIntegral b
 
 erase::(Show key, Ord key)=>HashTable key val->key->HashTable key val
 erase (HashTable xs len) key = HashTable (destroy xs key) (len-1)
@@ -43,10 +45,10 @@ erase (HashTable xs len) key = HashTable (destroy xs key) (len-1)
 		destroy [] _ = []
 		destroy ((Element (key,val) next):xs) find | hash (show key) == hash (show find) = xs 
 							   | otherwise = (Element (key, val) next):(destroy xs find)
+							   
 insert' :: (Show key, Ord key) => HashTable key val -> key -> val -> HashTable key val
 insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
 					where
-						elem::(Show key, Ord key) => [HT_Element key val] -> key -> val -> [HT_Element key val]
 						elem [] find value = [Element (find, value) []]
 						elem ((Element (key,val) next):xs) find value | hash (show key) == hash (show find) && key == find = (Element (key,val) ((Element (find,value) [Equal]):next)):xs
 											      | hash (show key) == hash (show find) && key < find = (Element (key,val) next):(elem xs find value)
@@ -68,4 +70,5 @@ size (HashTable xs len) = len
 
 empty :: (Show key, Ord key) => HashTable key val -> Bool
 empty (HashTable xs len) | len == 0 = True
-			  | otherwise = False
+			 | otherwise = False
+
