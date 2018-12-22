@@ -6,8 +6,6 @@ import Data.Int
 import Data.Bits
 import GHC.Int 
 
---ord na eq, izmenit insert'
-
 data HT_Element key val = Equal | Element (key,val) [HT_Element key val] deriving (Show, Eq, Ord)
 
 data HashTable key val = HashTable [HT_Element key val] Integer deriving (Show)
