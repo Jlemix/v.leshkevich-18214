@@ -15,7 +15,7 @@ data HashTable key val = HashTable [HT_Element key val] Integer deriving (Show)
 defaultHashTable :: HashTable key val
 defaultHashTable = HashTable [] 0
 
-fromList :: (Show key, Ord key)=>[(key,val)]->HashTable key val
+fromList :: (Show key, Eq key)=>[(key,val)]->HashTable key val
 fromList xs = HashTable (construct xs) (toInteger(length xs))
 				where
 					construct [] = []
@@ -39,36 +39,36 @@ hash = foldl' f golden
 			              r :: Int32
 			              r = fromIntegral a * fromIntegral b
 
-erase::(Show key, Ord key)=>HashTable key val->key->HashTable key val
+erase::(Show key, Eq key)=>HashTable key val->key->HashTable key val
 erase (HashTable xs len) key = HashTable (destroy xs key) (len-1)
 	where
 		destroy [] _ = []
 		destroy ((Element (key,val) next):xs) find | hash (show key) == hash (show find) = xs 
 							   | otherwise = (Element (key, val) next):(destroy xs find)
 							   
-insert' :: (Show key, Ord key) => HashTable key val -> key -> val -> HashTable key val
+insert' :: (Show key, Eq key) => HashTable key val -> key -> val -> HashTable key val
 insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
 					where
 						elem [] find value = [Element (find, value) []]
 						elem ((Element (key,val) next):xs) find value | hash (show key) == hash (show find) && key == find = (Element (key,val) ((Element (find,value) [Equal]):next)):xs
-											      | hash (show key) == hash (show find) && key < find = (Element (key,val) next):(elem xs find value)
+--											      | hash (show key) == hash (show find) && key < find = (Element (key,val) next):(elem xs find value)
 											      | otherwise = (Element (find,value) []):(Element (key,value) next):xs
-contains :: (Show key, Ord key) => HashTable key val -> key -> Bool
+contains :: (Show key, Eq key) => HashTable key val -> key -> Bool
 contains (HashTable xs len) key = lookup xs key
 					where
 						lookup [] _ = False
 						lookup ((Element (key,val) next):xs) find | hash (show key) == hash (show find) && key == find = True
 									                  | otherwise = lookup xs find
-at :: (Show key, Ord key) => HashTable key val -> key -> val
+at :: (Show key, Eq key) => HashTable key val -> key -> val
 at (HashTable xs len) key = retrn xs key
 				where
 					retrn [] _ = error "Can not find value by this key"
 					retrn ((Element (key,val) next):xs) find | hash (show key) == hash (show find) = val
 									         | otherwise = retrn xs find
-size :: (Show key, Ord key) => HashTable key val -> Integer
+size :: (Show key, Eq key) => HashTable key val -> Integer
 size (HashTable xs len) = len
 
-empty :: (Show key, Ord key) => HashTable key val -> Bool
+empty :: (Show key, Eq key) => HashTable key val -> Bool
 empty (HashTable xs len) | len == 0 = True
 			 | otherwise = False
 
