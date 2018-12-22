@@ -51,8 +51,7 @@ insert' (HashTable xs len) key val = HashTable (elem xs key val) (len + 1)
 					where
 						elem [] find value = [Element (find, value) []]
 						elem ((Element (key,val) next):xs) find value | hash (show key) == hash (show find) && key == find = (Element (key,val) ((Element (find,value) [Equal]):next)):xs
---											      | hash (show key) == hash (show find) && key < find = (Element (key,val) next):(elem xs find value)
-											      | otherwise = (Element (find,value) []):(Element (key,value) next):xs
+											      | otherwise = (Element (find,value) []):(Element (key,val) next):xs
 contains :: (Show key, Eq key) => HashTable key val -> key -> Bool
 contains (HashTable xs len) key = lookup xs key
 					where
