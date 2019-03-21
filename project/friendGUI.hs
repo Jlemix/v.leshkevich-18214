@@ -66,7 +66,7 @@ handleInput
       Just _ -> return (field, X)
 
       Nothing -> do
-        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
+        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
 		when (winCond newField (maybeContainer X) == True) (winP1)
 
         return (newField, O)
