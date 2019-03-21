@@ -28,9 +28,9 @@ if %cho%==e goto EXIT
 echo Invalid choice.
 goto DECISION
 :FRIEND
-start s.exe
+start friendGUI.exe
 :BOT
-start bot.exe
+start botGUI.exe
 :CONSOLE
 start ETOKRESTI.exe
 :EXIT
