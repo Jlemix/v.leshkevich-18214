@@ -3,6 +3,7 @@ import Graphics.Gloss.Data.Picture
 import Control.Lens
 import Control.Monad
 import Data.Monoid
+import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 
