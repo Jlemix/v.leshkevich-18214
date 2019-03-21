@@ -31,12 +31,12 @@ main = do
     black
     60
     (initialBoard, X)
-    drawBoard
+    fieldLook
     handleInput
     playerTurn
 
-drawBoard :: (Field, Mark) -> IO Picture
-drawBoard (field, _) = return (grid <> marks)
+fieldLook :: (Field, Mark) -> IO Picture
+fieldLook (field, _) = return (grid <> marks)
  where
   grid = 
     color white (line [ (-100, -300), (-100,  300) ]) <> -- delaem setky, kombiniruya 'kartinki'
@@ -68,7 +68,7 @@ handleInput
 
       Nothing -> do
         let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
-		when (winCond newField (maybeContainer X) == True) (winP1)
+        when (winCond newField (maybeContainer X) == True) (winP1)
 
         return (newField, O)
 handleInput
@@ -83,7 +83,7 @@ handleInput
 
       Nothing -> do
         let newField = (ix gridX . ix gridY .~ (Just O)) field
-		when (winCond newField (maybeContainer O) == True) (winP2)
+        when (winCond newField (maybeContainer O) == True) (winP2)
 
         return (newField, X)
 handleInput _ (field, mark) = return (field, mark)
