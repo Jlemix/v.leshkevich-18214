@@ -4,6 +4,8 @@ import Control.Concurrent.MVar
 import Control.Lens
 import Control.Monad
 import Data.Monoid
+import System.Exit
+import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import System.Random
 
@@ -14,13 +16,24 @@ type Field = [[Maybe Mark]]
 initialField :: Field
 initialField = replicate 3 (replicate 3 Nothing)
 
+win = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white winningPicture
+
+lose = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white losingPicture
+
+winningPicture :: Float -> Picture
+winningPicture _ = translate (-300) (5) $ text "YOU WON"
+
+losingPicture :: Float -> Picture
+losingPicture _ = translate (-300) (5) $ text "YOU LOST"
+
+
 main :: IO ()
 main = do
   aiMove <- newEmptyMVar
 
   playIO
     (InWindow "ETO KRESTI" (600, 600) (100, 100))
-    white
+    black
     60
     (initialField, X)
     fieldLook
@@ -31,10 +44,10 @@ fieldLook :: (Field, Mark) -> IO Picture
 fieldLook (field, _) = return (grid <> marks)
  where
   grid = 
-    color black (line [ (-100, -300), (-100,  300) ]) <> -- delaem setky, kombiniruya 'kartinki'
-    color black (line [ ( 100, -300), ( 100,  300) ]) <>
-    color black (line [ (-300,  100), ( 300,  100) ]) <>
-    color black (line [ (-300, -100), ( 300, -100) ])
+    color white (line [ (-100, -300), (-100,  300) ]) <> -- delaem setky, kombiniruya 'kartinki'
+    color white (line [ ( 100, -300), ( 100,  300) ]) <>
+    color white (line [ (-300,  100), ( 300,  100) ]) <>
+    color white (line [ (-300, -100), ( 300, -100) ])
 
   marks = mconcat
     [ translate (fromIntegral $ (x - 1) * 200) -- koordinati
@@ -51,13 +64,12 @@ handleInput :: MVar Field -> Event -> (Field, Mark) -> IO (Field, Mark)
 handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
     let snap = (+1) . min 1 . max (-1) . fromIntegral . floor . (/ 100) . (+ 50) -- convertiryem koordinati mishki v koordinati na setke
         (gridX, gridY) = (snap x, snap y)
-        
     in case (field !! gridX) !! gridY of
       Just _ -> return (field, X) -- esli zanyato
    
       Nothing -> do --norm
         let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
-        if (winCond newField (maybeContainer X) == True) then threadDelay 1000000000000000000000000 else threadDelay 1
+        when (winCond newField (maybeContainer X) == True) (win)
         aiHandle aiMove newField
         return (newField, O)
 
@@ -68,7 +80,8 @@ maybeContainer x = Just x
 maybeContainer _ = Nothing
 
 aiHandle :: MVar Field -> Field -> IO () -- mvar dlya raboti s IO, mvar - tipo yashik v kotorom est/nety zna4eniya
-aiHandle aiMove field = void $ forkIO $ do -- forkIO - fonovoe deistvie
+aiHandle aiMove field = do 
+  when (winCond field (maybeContainer O) == True) (lose)
 
   let turns = [ (ix x . ix y .~ Just O) field -- spisok vseh vozmojnih hodov iz tekyshego polya
               | x <- [0..2]
@@ -79,14 +92,13 @@ aiHandle aiMove field = void $ forkIO $ do -- forkIO - fonovoe deistvie
   case turns of
     [] -> do -- net hodov
       putMVar aiMove field -- putMVar - lojim rezyltat v yacheiky
-      if (winCond field (maybeContainer O) == True) then threadDelay 1000000000000000000000000 else threadDelay 1
+      
 
     _ -> do -- hodim
-      if (winCond field (maybeContainer O) == True) then threadDelay 1000000000000000000000000 else threadDelay 1
+      
       newField <- (turns !!) <$> randomRIO (0, length turns - 1) -- delaem randomniy hod
       putMVar aiMove newField -- putMVar - lojim rezyltat v yacheiky
-      if (winCond newField (maybeContainer O) == True) then threadDelay 1000000000000000000000000 else threadDelay 1
-	  --when (winCond newField O == True) delay 1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+      
 
 playerTurn :: MVar Field -> Float -> (Field, Mark) -> IO (Field, Mark)
 playerTurn aiMove _ (field, O) = tryTakeMVar aiMove >>= return . maybe (field, O) (\newField -> (newField, X)) -- proveryaem, sdelal li kompukter hod, ispolzuya tryTakeMVar. sdelal -> imeem Just Field, novoe pole
