@@ -68,9 +68,10 @@ handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
       Just _ -> return (field, X) -- esli zanyato
    
       Nothing -> do --norm
-        let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
+        let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
         when (winCond newField (maybeContainer X) == True) (win)
         aiHandle aiMove newField
+        when (winCond newField (maybeContainer O) == True) (exitSuccess)
         return (newField, O)
 
 handleInput _ _ (field, mark) = return (field, mark)
@@ -83,7 +84,7 @@ aiHandle :: MVar Field -> Field -> IO () -- mvar dlya raboti s IO, mvar - tipo y
 aiHandle aiMove field = do 
   when (winCond field (maybeContainer O) == True) (lose)
 
-  let turns = [ (ix x . ix y .~ Just O) field -- spisok vseh vozmojnih hodov iz tekyshego polya
+  let turns = [ (ix x . ix y .~ Just O) field -- spisok vseh vozmojnih hodov iz tekyshego polya , ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
               | x <- [0..2]
               , y <- [0..2]
               , Nothing <- [ (field !! x) !! y ]
@@ -92,12 +93,14 @@ aiHandle aiMove field = do
   case turns of
     [] -> do -- net hodov
       putMVar aiMove field -- putMVar - lojim rezyltat v yacheiky
+      when (winCond field (maybeContainer O) == True) (lose)
       
 
     _ -> do -- hodim
-      
+      when (winCond field (maybeContainer O) == True) (lose)
       newField <- (turns !!) <$> randomRIO (0, length turns - 1) -- delaem randomniy hod
       putMVar aiMove newField -- putMVar - lojim rezyltat v yacheiky
+      when (winCond field (maybeContainer O) == True) (lose)
       
 
 playerTurn :: MVar Field -> Float -> (Field, Mark) -> IO (Field, Mark)
