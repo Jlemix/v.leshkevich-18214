@@ -84,8 +84,8 @@ aiHandle :: MVar Field -> Field -> IO () -- mvar dlya raboti s IO, mvar - tipo y
 aiHandle aiMove field = do 
   when (winCond field (maybeContainer O) == True) (lose)
 
-  let turns = [ (ix x . ix y .~ Just O) field -- spisok vseh vozmojnih hodov iz tekyshego polya , ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
-              | x <- [0..2]
+  let turns = [ (ix x . ix y .~ Just O) field -- spisok vseh vozmojnih hodov iz tekyshego polya , ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa (i - tiy element v strukture)
+              | x <- [0..2] -- .~ eto tipo set(ystanovit zna4enie), kak =
               , y <- [0..2]
               , Nothing <- [ (field !! x) !! y ]
               ]
