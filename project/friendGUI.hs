@@ -67,8 +67,8 @@ handleInput
       Just _ -> return (field, X)
 
       Nothing -> do
-        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
-        when (winCond newField (maybeContainer X) == True) (winP1)
+        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa (i - tiy element v strukture)
+        when (winCond newField (maybeContainer X) == True) (winP1) -- .~ eto tipo set(ystanovit zna4enie), kak =
 
         return (newField, O)
 handleInput
