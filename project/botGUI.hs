@@ -68,7 +68,7 @@ handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
       Just _ -> return (field, X) -- esli zanyato
    
       Nothing -> do --norm
-        let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
+        let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
         when (winCond newField (maybeContainer X) == True) (win)
         aiHandle aiMove newField
         return (newField, O)
