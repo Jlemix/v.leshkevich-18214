@@ -100,7 +100,10 @@ maybeContainer x = Just x
 maybeContainer _ = Nothing
 
 tie :: Field -> Maybe Mark -> Bool
-tie f m = if ((f!!0!!0 /= Nothing) && (f!!0!!1 /= Nothing) && (f!!0!!2 /= Nothing) && (f!!1!!0 /= Nothing) && (f!!1!!1 /= Nothing) && (f!!1!!2 /= Nothing) && (f!!2!!0 /= Nothing) && (f!!2!!1 /= Nothing) && (f!!2!!2 /= Nothing)) == True then True else False
+tie f m = if ((f!!0!!0 /= Nothing) && (f!!0!!1 /= Nothing) && (f!!0!!2 /= Nothing) && 
+             (f!!1!!0 /= Nothing) && (f!!1!!1 /= Nothing) && (f!!1!!2 /= Nothing) && 
+             (f!!2!!0 /= Nothing) && (f!!2!!1 /= Nothing) && (f!!2!!2 /= Nothing)) == True then True 
+               else False
 
 winCond :: Field -> Maybe Mark -> Bool
 winCond f c | ((f!!0!!0 == c) && (f!!0!!1 == c) && (f!!0!!2 == c)) == True = True
