@@ -11,8 +11,8 @@ data Mark = X | O deriving Eq
 
 type Field = [[Maybe Mark]]
 
-initialBoard :: Field
-initialBoard = replicate 3 (replicate 3 Nothing)
+initialField :: Field
+initialField = replicate 3 (replicate 3 Nothing)
 
 winP1 = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white winningPictureP1
 
@@ -30,7 +30,7 @@ main = do
     (InWindow "ETO KRESTI" (600, 600) (100, 100))
     black
     60
-    (initialBoard, X)
+    (initialField, X)
     fieldLook
     handleInput
     playerTurn
@@ -66,8 +66,8 @@ handleInput
       Just _ -> return (field, X)
 
       Nothing -> do
-        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa (i - tiy element v strukture)
-        when (winCond newField (maybeContainer X) == True) (winP1) -- .~ eto tipo set(ystanovit zna4enie), kak =
+        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
+        when (winCond newField (maybeContainer X) == True) (winP1)
 
         return (newField, O)
 handleInput
@@ -88,7 +88,7 @@ handleInput
 handleInput _ (field, mark) = return (field, mark)
 
 playerTurn :: Float -> (Field, Mark) -> IO (Field, Mark)
-playerTurn _ (field, O) = return (field, O)
+playerTurn _  = return
 
 maybeContainer :: a -> Maybe a
 maybeContainer x = Just x
