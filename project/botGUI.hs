@@ -77,7 +77,6 @@ handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
         when (winCond newField (maybeContainer X) == True) (win)
         when (tie field (maybeContainer O) == True) (noOne)
         aiHandle aiMove newField
-        --when (winCond newField (maybeContainer O) == True) (exitSuccess)
         return (newField, O)
 
 handleInput _ _ (field, mark) = return (field, mark)
