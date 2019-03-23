@@ -20,11 +20,17 @@ win = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white winningPicture
 
 lose = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white losingPicture
 
+noOne = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white tiePicture
+
+
 winningPicture :: Float -> Picture
 winningPicture _ = translate (-300) (5) $ text "YOU WON"
 
 losingPicture :: Float -> Picture
 losingPicture _ = translate (-300) (5) $ text "YOU LOST"
+
+tiePicture :: Float -> Picture
+tiePicture _ = translate (-300) (5) $ text "TIE"
 
 
 main :: IO ()
@@ -69,6 +75,7 @@ handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
       Nothing -> do --norm
         let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
         when (winCond newField (maybeContainer X) == True) (win)
+        when (tie field (maybeContainer O) == True) (noOne)
         aiHandle aiMove newField
         --when (winCond newField (maybeContainer O) == True) (exitSuccess)
         return (newField, O)
@@ -93,6 +100,7 @@ aiHandle aiMove field = do
     [] -> do -- net hodov
       putMVar aiMove field -- putMVar - lojim rezyltat v yacheiky
       when (winCond field (maybeContainer O) == True) (lose)
+      when (tie field (maybeContainer O) == True) (noOne)
       
 
     _ -> do -- hodim
@@ -101,11 +109,15 @@ aiHandle aiMove field = do
       when (winCond field (maybeContainer O) == True) (lose)
       putMVar aiMove newField -- putMVar - lojim rezyltat v yacheiky
       when (winCond field (maybeContainer O) == True) (lose)
+      when (tie field (maybeContainer O) == True) (noOne)
       
 
 playerTurn :: MVar Field -> Float -> (Field, Mark) -> IO (Field, Mark)
 playerTurn aiMove _ (field, O) = tryTakeMVar aiMove >>= return . maybe (field, O) (\newField -> (newField, X)) -- proveryaem, sdelal li kompukter hod, ispolzuya tryTakeMVar. sdelal -> imeem Just Field, novoe pole
 playerTurn _ _ state = return state -- ne sdelal hod -> Nothing => ni4e ne menyaem
+
+tie :: Field -> Maybe Mark -> Bool
+tie f m = if ((f!!0!!0 /= Nothing) && (f!!0!!1 /= Nothing) && (f!!0!!2 /= Nothing) && (f!!1!!0 /= Nothing) && (f!!1!!1 /= Nothing) && (f!!1!!2 /= Nothing) && (f!!2!!0 /= Nothing) && (f!!2!!1 /= Nothing) && (f!!2!!2 /= Nothing)) == True then True else False
 
 winCond :: Field -> Maybe Mark -> Bool
 winCond f c | ((f!!0!!0 == c) && (f!!0!!1 == c) && (f!!0!!2 == c)) == True = True
