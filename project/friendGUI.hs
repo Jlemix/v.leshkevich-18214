@@ -48,7 +48,7 @@ fieldLook (field, _) = return (grid <> marks)
                 (fromIntegral $ (y - 1) * 200) $
         case mark of
           X -> color red (rotate 45 (pictures [rectangleSolid 90 10, rectangleSolid 10 90]))
-          O -> color black (thickCircle 35 10)
+          O -> color blue (thickCircle 35 10)
     | x <- [0..2] -- ciklom probegaem kajdyu kletky
     , y <- [0..2]
     , Just mark <- [ (field !! x) !! y ] -- esli fail, to prodoljaem, esli vipolnitsa, to mojem postavit mark. Sozdaetsa spisok mark, kotorie concatiniryem [Picture] -> Picture
@@ -88,7 +88,7 @@ handleInput
 handleInput _ (field, mark) = return (field, mark)
 
 playerTurn :: Float -> (Field, Mark) -> IO (Field, Mark)
-playerTurn _  = return
+playerTurn _ = return
 
 maybeContainer :: a -> Maybe a
 maybeContainer x = Just x
