@@ -43,11 +43,10 @@ main = do
 fieldLook :: (Field, Mark) -> IO Picture
 fieldLook (field, _) = return (grid <> marks)
  where
-  grid = 
-    color white (line [ (-100, -300), (-100,  300) ]) <> -- delaem setky, kombiniruya 'kartinki'
-    color white (line [ ( 100, -300), ( 100,  300) ]) <>
-    color white (line [ (-300,  100), ( 300,  100) ]) <>
-    color white (line [ (-300, -100), ( 300, -100) ])
+  grid = color white (line [ (-100, -300), (-100,  300) ]) <> -- delaem setky, kombiniruya 'kartinki'
+         color white (line [ ( 100, -300), ( 100,  300) ]) <>
+         color white (line [ (-300,  100), ( 300,  100) ]) <>
+         color white (line [ (-300, -100), ( 300, -100) ])
 
   marks = mconcat
     [ translate (fromIntegral $ (x - 1) * 200) -- koordinati
