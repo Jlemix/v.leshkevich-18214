@@ -70,7 +70,7 @@ handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
         let newField = (ix gridX . ix gridY .~ (Just X)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
         when (winCond newField (maybeContainer X) == True) (win)
         aiHandle aiMove newField
-        when (winCond newField (maybeContainer O) == True) (exitSuccess)
+        --when (winCond newField (maybeContainer O) == True) (exitSuccess)
         return (newField, O)
 
 handleInput _ _ (field, mark) = return (field, mark)
@@ -98,6 +98,7 @@ aiHandle aiMove field = do
     _ -> do -- hodim
       when (winCond field (maybeContainer O) == True) (lose)
       newField <- (turns !!) <$> randomRIO (0, length turns - 1) -- delaem randomniy hod
+      when (winCond field (maybeContainer O) == True) (lose)
       putMVar aiMove newField -- putMVar - lojim rezyltat v yacheiky
       when (winCond field (maybeContainer O) == True) (lose)
       
