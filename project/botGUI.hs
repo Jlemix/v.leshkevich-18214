@@ -84,13 +84,6 @@ maybeContainer :: a -> Maybe a
 maybeContainer x = Just x
 maybeContainer _ = Nothing
 
-sumMaybe :: Num a => [Maybe a] -> Maybe a
-sumMaybe = fmap sum . sequence
-
-markToInt :: Mark -> Int
-markToInt c | c == X = 1
-            | otherwise = 2
-
 aiHandle :: MVar Field -> Field -> IO () -- mvar dlya raboti s IO, mvar - tipo yashik v kotorom est/nety zna4eniya
 aiHandle aiMove field = do 
   when (winCond field O == True) (lose)
