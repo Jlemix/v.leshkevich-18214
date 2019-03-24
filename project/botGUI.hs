@@ -73,20 +73,16 @@ handleInput aiMove (EventKey (MouseButton LeftButton) Up _ (x, y)) (field, X) =
    
       (Nothing, _) -> do --norm
         let newField = (ix gridX . ix gridY .~ (Just X, 1)) field  -- novoe pole s 'X' gde najal polzovatel, menyaem hod.
-        when (winCond newField X == True) (win)
-        when (tie field (maybeContainer O) == True) (noOne)
+        when (winCond newField == True) (win)
+        when (tie field == True) (noOne)
         aiHandle aiMove newField
         return (newField, O)
 
 handleInput _ _ (field, mark) = return (field, mark)
 
-maybeContainer :: a -> Maybe a
-maybeContainer x = Just x
-maybeContainer _ = Nothing
-
 aiHandle :: MVar Field -> Field -> IO () -- mvar dlya raboti s IO, mvar - tipo yashik v kotorom est/nety zna4eniya
 aiHandle aiMove field = do 
-  when (winCond field O == True) (lose)
+  when (winCond field == True) (lose)
 
   let turns = [ (ix x . ix y .~ (Just O, 2)) field -- spisok vseh vozmojnih hodov iz tekyshego polya , ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa (i - tiy element v strukture)
               | x <- [0..2] -- .~ eto tipo set(ystanovit zna4enie), kak =
@@ -97,36 +93,36 @@ aiHandle aiMove field = do
   case turns of
     [] -> do -- net hodov
       putMVar aiMove field -- putMVar - lojim rezyltat v yacheiky
-      when (winCond field O == True) (lose)
-      when (tie field (maybeContainer O) == True) (noOne)
+      when (winCond field == True) (lose)
+      when (tie field == True) (noOne)
       
 
     _ -> do -- hodim
-      when (winCond field O == True) (lose)
+      when (winCond field == True) (lose)
       newField <- (turns !!) <$> randomRIO (0, length turns - 1) -- delaem randomniy hod
-      when (winCond field O == True) (lose)
+      when (winCond field == True) (lose)
       putMVar aiMove newField -- putMVar - lojim rezyltat v yacheiky
-      when (winCond field O == True) (lose)
-      when (tie field (maybeContainer O) == True) (noOne)
+      when (winCond field == True) (lose)
+      when (tie field == True) (noOne)
       
 
 playerTurn :: MVar Field -> Float -> (Field, Mark) -> IO (Field, Mark)
 playerTurn aiMove _ (field, O) = tryTakeMVar aiMove >>= return . maybe (field, O) (\newField -> (newField, X)) -- proveryaem, sdelal li kompukter hod, ispolzuya tryTakeMVar. sdelal -> imeem Just Field, novoe pole
 playerTurn _ _ state = return state -- ne sdelal hod -> Nothing => ni4e ne menyaem
 
-tie :: Field -> Maybe Mark -> Bool
-tie f m = if ((f!!0!!0 /= (Nothing, -100)) && (f!!0!!1 /= (Nothing, -100)) && (f!!0!!2 /= (Nothing, -100)) && 
-             (f!!1!!0 /= (Nothing, -100)) && (f!!1!!1 /= (Nothing, -100)) && (f!!1!!2 /= (Nothing, -100)) && 
-             (f!!2!!0 /= (Nothing, -100)) && (f!!2!!1 /= (Nothing, -100)) && (f!!2!!2 /= (Nothing, -100))) == True then True 
-               else False
+tie :: Field -> Bool
+tie f = if ((f!!0!!0 /= (Nothing, -100)) && (f!!0!!1 /= (Nothing, -100)) && (f!!0!!2 /= (Nothing, -100)) && 
+            (f!!1!!0 /= (Nothing, -100)) && (f!!1!!1 /= (Nothing, -100)) && (f!!1!!2 /= (Nothing, -100)) && 
+            (f!!2!!0 /= (Nothing, -100)) && (f!!2!!1 /= (Nothing, -100)) && (f!!2!!2 /= (Nothing, -100))) == True then True 
+              else False
 
-winCond :: Field -> Mark -> Bool
-winCond f c | (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) >= 3) && (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) >= 3) && (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
-            | otherwise = False
+winCond :: Field -> Bool
+winCond f | (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) >= 3) && (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) >= 3) && (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
+          | otherwise = False
