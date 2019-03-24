@@ -9,10 +9,10 @@ import System.Random
 
 data Mark = X | O deriving Eq
 
-type Field = [[Maybe Mark]]
+type Field = [[(Maybe Mark, Int)]]
 
 initialField :: Field
-initialField = replicate 3 (replicate 3 Nothing)
+initialField = replicate 3 (replicate 3 (Nothing, -100))
 
 winP1 = animate (InWindow "ETO KRESTI" (800, 300) (100, 100)) white winningPictureP1
 
@@ -56,7 +56,7 @@ fieldLook (field, _) = return (grid <> marks)
           O -> color blue (thickCircle 35 10)
     | x <- [0..2] -- ciklom probegaem kajdyu kletky
     , y <- [0..2]
-    , Just mark <- [ (field !! x) !! y ] -- esli fail, to prodoljaem, esli vipolnitsa, to mojem postavit mark. Sozdaetsa spisok mark, kotorie concatiniryem [Picture] -> Picture
+    , (Just mark, _) <- [ (field !! x) !! y ] -- esli fail, to prodoljaem, esli vipolnitsa, to mojem postavit mark. Sozdaetsa spisok mark, kotorie concatiniryem [Picture] -> Picture
     ]
 
 handleInput :: Event -> (Field, Mark) -> IO (Field, Mark)
@@ -68,11 +68,11 @@ handleInput
         (gridX, gridY) = (snap x, snap y)
     
     in case (field !! gridX) !! gridY of --  zanyato
-      Just _ -> return (field, X)
+      (Just _, _) -> return (field, X)
 
-      Nothing -> do
-        let newField = (ix gridX . ix gridY .~ (Just X)) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
-        when (winCond newField (maybeContainer X) == True) (winP1)
+      (Nothing, _) -> do
+        let newField = (ix gridX . ix gridY .~ ((Just X, 1))) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
+        when (winCond newField X == True) (winP1)
         when (tie newField (maybeContainer X) == True) (noOne)
         return (newField, O)
 handleInput
@@ -83,11 +83,11 @@ handleInput
         (gridX, gridY) = (snap x, snap y)
     
     in case (field !! gridX) !! gridY of
-      Just _ -> return (field, O)
+      (Just _, _) -> return (field, O)
 
-      Nothing -> do
-        let newField = (ix gridX . ix gridY .~ (Just O)) field
-        when (winCond newField (maybeContainer O) == True) (winP2)
+      (Nothing, _) -> do
+        let newField = (ix gridX . ix gridY .~ ((Just O, 2))) field
+        when (winCond newField O == True) (winP2)
         when (tie newField (maybeContainer O) == True) (noOne)
         return (newField, X)
 handleInput _ (field, mark) = return (field, mark)
@@ -100,18 +100,18 @@ maybeContainer x = Just x
 maybeContainer _ = Nothing
 
 tie :: Field -> Maybe Mark -> Bool
-tie f m = if ((f!!0!!0 /= Nothing) && (f!!0!!1 /= Nothing) && (f!!0!!2 /= Nothing) && 
-             (f!!1!!0 /= Nothing) && (f!!1!!1 /= Nothing) && (f!!1!!2 /= Nothing) && 
-             (f!!2!!0 /= Nothing) && (f!!2!!1 /= Nothing) && (f!!2!!2 /= Nothing)) == True then True 
+tie f m = if ((f!!0!!0 /= (Nothing, -100)) && (f!!0!!1 /= (Nothing, -100)) && (f!!0!!2 /= (Nothing, -100)) && 
+             (f!!1!!0 /= (Nothing, -100)) && (f!!1!!1 /= (Nothing, -100)) && (f!!1!!2 /= (Nothing, -100)) && 
+             (f!!2!!0 /= (Nothing, -100)) && (f!!2!!1 /= (Nothing, -100)) && (f!!2!!2 /= (Nothing, -100))) == True then True 
                else False
 
-winCond :: Field -> Maybe Mark -> Bool
-winCond f c | ((f!!0!!0 == c) && (f!!0!!1 == c) && (f!!0!!2 == c)) == True = True
-            | ((f!!1!!0 == c) && (f!!1!!1 == c) && (f!!1!!2 == c)) == True = True
-            | ((f!!2!!0 == c) && (f!!2!!1 == c) && (f!!2!!2 == c)) == True = True
-            | ((f!!0!!0 == c) && (f!!1!!0 == c) && (f!!2!!0 == c)) == True = True
-            | ((f!!0!!1 == c) && (f!!1!!1 == c) && (f!!2!!1 == c)) == True = True
-            | ((f!!0!!2 == c) && (f!!1!!2 == c) && (f!!2!!2 == c)) == True = True
-            | ((f!!0!!0 == c) && (f!!1!!1 == c) && (f!!2!!2 == c)) == True = True
-            | ((f!!0!!2 == c) && (f!!1!!1 == c) && (f!!2!!0 == c)) == True = True
+winCond :: Field -> Mark -> Bool
+winCond f c | (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) `mod` 3 == 0) = True
+            | (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) >= 3) && (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) `mod` 3 == 0) = True
+            | (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+            | (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
+            | (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) >= 3) && (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) `mod` 3 == 0) = True
+            | (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+            | (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+            | (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
             | otherwise = False
