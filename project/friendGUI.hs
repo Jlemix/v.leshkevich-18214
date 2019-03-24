@@ -72,8 +72,8 @@ handleInput
 
       (Nothing, _) -> do
         let newField = (ix gridX . ix gridY .~ ((Just X, 1))) field -- novoe pole s 'X' gde najal polzovatel, menyaem hod, ix dlya indeksirovaniya spiska, tipo obhod zadannogo indeksa
-        when (winCond newField X == True) (winP1)
-        when (tie newField (maybeContainer X) == True) (noOne)
+        when (winCond newField == True) (winP1)
+        when (tie newField == True) (noOne)
         return (newField, O)
 handleInput
   (EventKey (MouseButton LeftButton) Up _ (x, y))
@@ -87,31 +87,27 @@ handleInput
 
       (Nothing, _) -> do
         let newField = (ix gridX . ix gridY .~ ((Just O, 2))) field
-        when (winCond newField O == True) (winP2)
-        when (tie newField (maybeContainer O) == True) (noOne)
+        when (winCond newField == True) (winP2)
+        when (tie newField == True) (noOne)
         return (newField, X)
 handleInput _ (field, mark) = return (field, mark)
 
 playerTurn :: Float -> (Field, Mark) -> IO (Field, Mark)
 playerTurn _  = return
 
-maybeContainer :: a -> Maybe a
-maybeContainer x = Just x
-maybeContainer _ = Nothing
+tie :: Field -> Bool
+tie f = if ((f!!0!!0 /= (Nothing, -100)) && (f!!0!!1 /= (Nothing, -100)) && (f!!0!!2 /= (Nothing, -100)) && 
+            (f!!1!!0 /= (Nothing, -100)) && (f!!1!!1 /= (Nothing, -100)) && (f!!1!!2 /= (Nothing, -100)) && 
+            (f!!2!!0 /= (Nothing, -100)) && (f!!2!!1 /= (Nothing, -100)) && (f!!2!!2 /= (Nothing, -100))) == True then True 
+              else False
 
-tie :: Field -> Maybe Mark -> Bool
-tie f m = if ((f!!0!!0 /= (Nothing, -100)) && (f!!0!!1 /= (Nothing, -100)) && (f!!0!!2 /= (Nothing, -100)) && 
-             (f!!1!!0 /= (Nothing, -100)) && (f!!1!!1 /= (Nothing, -100)) && (f!!1!!2 /= (Nothing, -100)) && 
-             (f!!2!!0 /= (Nothing, -100)) && (f!!2!!1 /= (Nothing, -100)) && (f!!2!!2 /= (Nothing, -100))) == True then True 
-               else False
-
-winCond :: Field -> Mark -> Bool
-winCond f c | (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) >= 3) && (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) >= 3) && (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
-            | (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
-            | otherwise = False
+winCond :: Field -> Bool
+winCond f | (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!0!!1)) + (snd(f!!0!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) >= 3) && (((snd(f!!1!!0)) + (snd(f!!1!!1)) + (snd(f!!1!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!2!!0)) + (snd(f!!2!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!0)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) >= 3) && (((snd(f!!0!!1)) + (snd(f!!1!!1)) + (snd(f!!2!!1))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!2)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) >= 3) && (((snd(f!!0!!0)) + (snd(f!!1!!1)) + (snd(f!!2!!2))) `mod` 3 == 0) = True
+          | (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) >= 3) && (((snd(f!!0!!2)) + (snd(f!!1!!1)) + (snd(f!!2!!0))) `mod` 3 == 0) = True
+          | otherwise = False
